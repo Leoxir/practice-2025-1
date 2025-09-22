@@ -1,0 +1,179 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D-тренажёр для пусконаладочных испытаний</title>
+  <style>
+    /* Базовые стили для адаптивного дизайна */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f8f9fa;
+    }
+
+    header {
+      background: #1a73e8;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    nav ul li {
+      display: inline;
+      margin: 0 1rem;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    nav ul li a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    section {
+      margin-bottom: 2rem;
+    }
+
+    h1, h2, h3 {
+      color: #1a73e8;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      margin: 1rem 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    footer {
+      background: #1a73e8;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 600px) {
+      nav ul li {
+        display: block;
+        margin: 0.5rem 0;
+      }
+
+      main {
+        padding: 0 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>3D-тренажёр для пусконаладочных испытаний</h1>
+    <nav>
+      <ul>
+        <li><a href="#home">Главная</a></li>
+        <li><a href="#about">О проекте</a></li>
+        <li><a href="#github">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <section id="home">
+      <h2>Добро пожаловать!</h2>
+      <p>Этот сайт посвящён проектной практике по дисциплине «Проектная деятельность» в Московском Политехническом Университете (кафедра «Информационная безопасность», студент: Воробьёв Игорь Валерьевич, группа 241-352).</p>
+      <p>Проект включает создание 3D-тренажёра для симуляции пусконаладочных испытаний оборудования автоматизированных систем (АС), направленного на повышение эффективности обучения студентов I курса.</p>
+    </section>
+
+    <section id="about">
+      <h2>О проекте</h2>
+      <p>Проект «Создание 3D-тренажёра для проведения пусконаладочных испытаний на оборудовании АС» направлен на развитие навыков студентов в области автоматизированных систем.</p>
+      <h3>Цели проекта</h3>
+      <ul>
+        <li>Разработка интерактивной платформы для виртуальных испытаний оборудования (датчики, контроллеры, интерфейсы).</li>
+        <li>Автоматизация проверки сценариев пусконаладки, таких как калибровка сенсоров и диагностика неисправностей.</li>
+        <li>Интеграция элементов симуляции для обучения без использования реального оборудования.</li>
+      </ul>
+      <h3>Используемые технологии</h3>
+      <ul>
+        <li><strong>Unity/Blender</strong>: для 3D-моделирования оборудования АС.</li>
+        <li><strong>C#</strong>: для скриптов симуляции процессов пусконаладки.</li>
+        <li><strong>Git</strong>: для управления версиями и хранения исходников.</li>
+    </section>
+
+    <section id="github">
+      <h2>Репозиторий проекта</h2>
+      <p>Все исходные материалы, включая код, документацию и 3D-модели, доступны в репозитории GitHub:</p>
+      <p>Структура репозитория:</p>
+      <pre>
+
+      </pre>
+    </section>
+  </main>
+  
+  <footer>
+    <p>© 2025 Воробьёв Игорь Валерьевич, Московский Политехнический Университет</p>
+    <p>Кафедра «Информационная безопасность», создан 22 сентября 2025, 11:46 AM EEST</p>
+  </footer>
+</body>
+</html>
